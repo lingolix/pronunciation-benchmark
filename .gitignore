@@ -1,0 +1,8 @@
+data/tier1/audio/
+data/tier2/audio/
+data/_cache/
+data/responses/
+*.zip
+__pycache__/
+.venv/
+.pytest_cache/
