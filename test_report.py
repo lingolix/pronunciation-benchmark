@@ -24,3 +24,11 @@ def test_align_survives_an_inserted_vendor_word():
     words = [{"text": "the"}, {"text": "uh"}, {"text": "cat"}, {"text": "sat."}]
     out = align(["The", "cat", "sat"], words)
     assert [w["text"] for w in out] == ["the", "cat", "sat."]
+
+
+def test_unverified_marks_only_misread_words():
+    from mark_unverified import unverified
+    item = {"lang": "en", "prompt": "That's what I'm going to do.",
+            "whisper": {"transcript": "That's what I am going to do."},
+            "target": "That's what I'm going to go."}  # planted: do -> go
+    assert unverified(item) == [2]

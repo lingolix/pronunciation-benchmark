@@ -306,11 +306,17 @@ def collect(manifest: list[dict], responses: dict[str, dict]) -> dict:
         if label and not label.get("word_level_scorable", True):
             continue  # nothing in the target carries the error
         pos = label.get("word_index") if label else None
-        labels = [1 if i == pos else 0 for i in range(len(target))]
+        # Words the speaker may not have said as written are neither right nor wrong
+        # (mark_unverified.py); the planted error stays.
+        unverified = set(item.get("unverified", ()))
+        keep = [i for i in range(len(target)) if i == pos or i not in unverified]
+        labels = [int(i == pos) for i in keep]
+        scores = [scores[i] for i in keep]
+        flags = None if flags is None else [flags[i] for i in keep]
         units.append((labels, scores, item, flags))
         if pos is not None:
             loc_n += 1
-            loc_hit += int(max(range(len(scores)), key=lambda i: scores[i]) == pos)
+            loc_hit += int(keep[max(range(len(scores)), key=lambda i: scores[i])] == pos)
     return {"units": units, "localisation": (loc_hit, loc_n), "latency": latency,
             "word_pairs": word_pairs, "utt_pairs": utt_pairs}
 

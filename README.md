@@ -40,6 +40,7 @@ vendors.py     one adapter per API, each reduced to the same word-level shape
 run.py         calls an API for every clip; resumable, keeps raw responses
 report.py      all metrics from the raw responses
 build_tier2.py downloads speechocean762 and builds test 2
+mark_unverified.py  marks test 1 words the speaker may have misread
 ```
 
 A test 1 manifest line:
@@ -54,6 +55,12 @@ A test 1 manifest line:
 
 `prompt` is what was said, `target` is the reference text sent to the API, and
 `label.word_index` is the word that no longer matches.
+
+Speakers sometimes misread a word of the prompt (詩 read as うた instead of し). Such a
+word is not a fair "correct" word: a system that flags it is right. `unverified` lists the
+target words where Whisper's transcript differs from the prompt (Japanese compared on kana
+readings), and `report.py` leaves them out of the correct words. `mark_unverified.py`
+recomputes the list (Japanese needs `uv run --with pyopenjtalk`).
 
 ## Reproduce
 
